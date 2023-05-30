@@ -1,4 +1,28 @@
 from tkinter import *
+import requests
+import geocoder
+
+def location():
+	try:
+		wa = "https://ipinfo.io/"
+		res = requests.get(wa)
+		data = res.json()
+		ct = data['city']
+		return ct
+	except Exception as e:
+		print("Issue",e)
+
+def temperature():
+	g = geocoder.ip('me')
+	Lat = str(g.latlng[0])
+	Long = str(g.latlng[1])
+
+	wa = "https://api.openweathermap.org/data/2.5/weather?lat="+Lat+"&lon="+Long+"&appid=d94c2df0e2c0da985f23bf31d152648b&units=metric"
+	res = requests.get(wa)
+
+	data = res.json()
+	return (data['main']['temp'])
+	
 
 root = Tk()
 root.title("E.M.S")
@@ -26,7 +50,7 @@ loc_label = Label(frame1,text = "Location:",font=f,bg='#DBF9DB',fg="black")
 loc_label.pack(padx=10,pady=10)
 loc_label.place(anchor=CENTER,relx=0.2,rely=0.5)
 
-loc_ans = Label(frame1,text = "",font=f,bg='white',fg="black")
+loc_ans = Label(frame1,text = location(),font=f,bg='#DBF9DB',fg="black")
 loc_ans.pack(padx=10,pady=10)
 loc_ans.place(anchor=CENTER,relx=0.4,rely=0.5)
 
@@ -34,7 +58,7 @@ temp_label = Label(frame1,text = "Temp:",font=f,bg='#DBF9DB',fg="black")
 temp_label.pack(padx=10,pady=10)
 temp_label.place(anchor=CENTER,relx=0.6,rely=0.5)
 
-temp_ans = Label(frame1,text = "",font=f,bg='white',fg="black")
+temp_ans = Label(frame1,text = temperature(),font=f,bg='#DBF9DB',fg="black")
 temp_ans.pack(padx=10,pady=10)
 temp_ans.place(anchor=CENTER,relx=0.8,rely=0.5)
 
