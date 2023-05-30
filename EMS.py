@@ -4,8 +4,12 @@ import geocoder
 
 # Add Employee
 def add():
-	root.destroy()
+	root.withdraw()
 	
+	def back():
+		win_1.destroy()
+		root.deiconify()
+
 	win_1 = Tk()
 	win_1.title("Add Employee")
 	win_1.geometry("520x400+500+200")
@@ -29,13 +33,17 @@ def add():
 
 	save_btn = Button(win_1,text="Save",font=f,width=10)
 	save_btn.pack(pady=10)
-	back_btn = Button(win_1,text="Back",font=f,width=10)
+	back_btn = Button(win_1,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
 	win_1.mainloop()
 
 def view():
-	root.destroy()
+	root.withdraw()
+	
+	def back():
+		win_2.destroy()
+		root.deiconify()
 	
 	win_2 = Tk()
 	win_2.title("View Employee")
@@ -46,13 +54,17 @@ def view():
 	view_sb = Scrollbar(win_2,bd=5)	
 	view_sb.pack(pady=10)
 	
-	back_btn = Button(win_2,text="Back",font=f,width=10)
+	back_btn = Button(win_2,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
 	win_2.mainloop()
 
 def update():
-	root.destroy()
+	root.withdraw()
+	
+	def back():
+		win_3.destroy()
+		root.deiconify()
 	
 	win_3 = Tk()
 	win_3.title("Update Employee")
@@ -77,14 +89,18 @@ def update():
 
 	save_btn = Button(win_3,text="Save",font=f,width=10)
 	save_btn.pack(pady=10)
-	back_btn = Button(win_3,text="Back",font=f,width=10)
+	back_btn = Button(win_3,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
 	win_3.mainloop()
 
 
 def delete():
-	root.destroy()
+	root.withdraw()
+	
+	def back():
+		win_4.destroy()
+		root.deiconify()
 	
 	win_4 = Tk()
 	win_4.title("Delete Employee")
@@ -99,7 +115,7 @@ def delete():
 
 	save_btn = Button(win_4,text="Save",font=f,width=10)
 	save_btn.pack(pady=10)
-	back_btn = Button(win_4,text="Back",font=f,width=10)
+	back_btn = Button(win_4,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
 	win_4.mainloop()
