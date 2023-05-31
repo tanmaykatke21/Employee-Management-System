@@ -13,32 +13,39 @@ def add():
 		try:
 			con = connect("ems.db")
 			cursor = con.cursor()
-			sql = "insert into emp values('%d','%s','%f')"
 			id = int(id_ent.get())
-			name = name_ent.get()
-			x = name.replace(" ",'')
-			salary = float(sal_ent.get())
-			if (id>0) and (len(name) >= 2) and (salary>=8000) and (x.isalpha()): 
-				cursor.execute(sql % (id,name,salary))
-				con.commit()
-				messagebox.showinfo("Success","Employee Added!")
-			else:
-				if id<=0:
-					messagebox.showerror("Error","ID must be greater than 0.")
-					id_ent.delete(0,END)
-					id_ent.focus()
-				if len(name)<2:
-					messagebox.showerror("Error","Name has to be minimum 2 letters")
-					name_ent.delete(0,END)
-					name_ent.focus()
-				if salary<8000:
-					messagebox.showerror("Error","Salary has to be minimum 8000.")
-					sal_ent.delete(0,END)
-					sal_ent.focus()
-				if x.isalpha() == False:
-					messagebox.showerror("Error","Name cannot contain digits or symbols.")
-					name_ent.delete(0,END)
-					name_ent.focus() 
+			sq = "select exists (select * from emp where id='%d' )"
+			c = cursor.execute(sq % id)
+			data_id = c.fetchall()
+			data_id = data_id[0][0]
+			if data_id == 0:
+				sql = "insert into emp values('%d','%s','%f')"
+				name = name_ent.get()
+				x = name.replace(" ", '')
+				salary = float(sal_ent.get())
+				if (id > 0) and (len(name) >= 2) and (salary >= 8000) and (x.isalpha()):
+					cursor.execute(sql % (id, name, salary))
+					con.commit()
+					messagebox.showinfo("Success", "Employee Added!")
+				else:
+					if id <= 0:
+						messagebox.showerror("Error", "ID must be greater than 0.")
+						id_ent.delete(0, END)
+						id_ent.focus()
+					if len(name) < 2:
+						messagebox.showerror("Error", "Name has to be minimum 2 letters")
+						name_ent.delete(0, END)
+						name_ent.focus()
+					if salary < 8000:
+						messagebox.showerror("Error", "Salary has to be minimum 8000.")
+						sal_ent.delete(0, END)
+						sal_ent.focus()
+					if x.isalpha() == False:
+						messagebox.showerror("Error", "Name cannot contain digits or symbols.")
+						name_ent.delete(0, END)
+						name_ent.focus()
+			elif data_id == 1:
+				messagebox.showerror("Error","ID already exists! ")
 
 		except ValueError as ve:
 			con.rollback()
@@ -267,7 +274,29 @@ def update():
 # Delete Employee
 def delete():
 	root.withdraw()
-	
+
+	def remove():
+		try:
+			con = connect("ems.db")
+			cursor = con.cursor()
+			id = int(id_ent.get())
+			sq = "select exists (select * from emp where id='%d' )"
+			c = cursor.execute(sq % id)
+			data_id = c.fetchall()
+			data_id = data_id[0][0]
+			if data_id == 1:
+				sql = "DELETE from emp WHERE id='%d'"
+				cursor.execute(sql % id)
+				con.commit()
+				messagebox.showinfo("Success","Record Deleted!")
+			elif data_id == 0:
+				messagebox.showerror("Error", "ID does not exist!")
+		except Exception as e:
+			messagebox.showerror("Error",e)
+		finally:
+			if con is not None:
+				con.close()
+			id_ent.delete(0,END)
 
 	def back():
 		win_4.destroy()
@@ -279,18 +308,20 @@ def delete():
 	win_4.configure(bg="#89ABFA")
 	f = ("Activ Grotesk",15,"bold")
 		
-	id_lab = Label(win_4,text="Enter ID:",font=f)
+	id_lab = Label(win_4,text="Enter ID:",font=f,bg="#89ABFA")
 	id_lab.pack(pady=10)
 	id_ent = Entry(win_4,font=f)
 	id_ent.pack(pady=10)
 
-	save_btn = Button(win_4,text="Save",font=f,width=10)
-	save_btn.pack(pady=10)
+	del_btn = Button(win_4,text="Delete",font=f,width=10,command=remove)
+	del_btn.pack(pady=10)
 	back_btn = Button(win_4,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
 	win_4.mainloop()
 	
+def chart():
+	pass
 
 
 # Location function using API
