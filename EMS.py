@@ -148,7 +148,80 @@ def view():
 # Update Employee
 def update():
 	root.withdraw()
-	
+	def find():
+		con = connect("ems.db")
+		cursor = con.cursor()
+		eid = id_ent.get()
+		try:
+			sq = "select exists (select * from emp where id="+eid+")"
+			c=cursor.execute(sq)
+			data_id = c.fetchall()
+			data_id = data_id[0][0]
+			if data_id == 1:
+				cursor.execute("select * from emp where id="+eid);
+				id_ent.configure(state="readonly")
+				name_ent.focus()
+				data = cursor.fetchall()
+
+				for d in data:
+					name_ent.insert(0,d[1])
+					sal_ent.insert(0,str(d[2]))
+			elif data_id == 0:
+				messagebox.showerror("Error","ID Does not Exist!")
+				id_ent.delete(0,END)
+				id_ent.focus()
+		except Exception as e:
+			print("Issue", e)
+		finally:
+			pass
+
+	def clear():
+		id_ent.configure(state=NORMAL)
+		id_ent.delete(0,END)
+		name_ent.delete(0,END)
+		sal_ent.delete(0,END)
+		id_ent.focus()
+
+	def save():
+		global nm, sal
+		try:
+			con = connect("ems.db")
+			sql = "UPDATE emp SET name='%s',salary='%f' WHERE id='%d'"
+			cursor = con.cursor()
+			emp_id = int(id_ent.get())
+			nm = name_ent.get()
+			x = nm.replace(" ", '')
+			sal = float(sal_ent.get())
+			if (len(nm)>=2) and (sal>=8000) and (x.isalpha()):
+				cursor.execute(sql % (nm,sal,emp_id))
+				con.commit()
+				messagebox.showinfo("Success","Record Updated!")
+			else:
+				if len(nm)<2:
+					messagebox.showerror("Error","Length of name should be greater than 2 characters.")
+					name_ent.delete(0,END)
+					name_ent.focus()
+				if sal<8000:
+					messagebox.showerror("Error", "Salary should be greater than 8000.")
+					sal_ent.delete(0, END)
+					sal_ent.focus()
+				if not x.isalpha():
+					messagebox.showerror("Error", "Name cannot contain numbers or symbols.")
+					name_ent.delete(0, END)
+					name_ent.focus()
+
+		except ValueError as ve:
+			con.rollback()
+			messagebox.showerror("Error","Incorrect Input type")
+		finally:
+			if con is not None:
+				con.close()
+			id_ent.configure(state=NORMAL)
+			id_ent.delete(0,END)
+			name_ent.delete(0,END)
+			sal_ent.delete(0,END)
+			id_ent.focus()
+
 	def back():
 		win_3.destroy()
 		root.deiconify()
@@ -159,25 +232,35 @@ def update():
 	win_3.configure(bg="#F98B88")
 	f = ("Activ Grotesk",15,"bold")
 		
-	id_lab = Label(win_3,text="Enter ID:",font=f)
+	id_lab = Label(win_3,text="Enter ID:",font=f,bg="#F98B88")
 	id_lab.pack(pady=10)
 	id_ent = Entry(win_3,font=f)
 	id_ent.pack(pady=10)
 
-	name_lab = Label(win_3,text="Enter Name:",font=f)
+
+	find_btn = Button(win_3,text="Find",font=f,command=find)
+	find_btn.pack(pady=10)
+	find_btn.place(relx=0.8,rely=0.12)
+
+	name_lab = Label(win_3,text="Enter Name:",font=f,bg="#F98B88")
 	name_lab.pack(pady=10)
 	name_ent = Entry(win_3,font=f)
 	name_ent.pack(pady=10)
 
-	sal_lab = Label(win_3,text="Enter Salary:",font=f)
+	sal_lab = Label(win_3,text="Enter Salary:",font=f,bg="#F98B88")
 	sal_lab.pack(pady=10)	
 	sal_ent = Entry(win_3,font=f)
 	sal_ent.pack(pady=10)
 
-	save_btn = Button(win_3,text="Save",font=f,width=10)
+	save_btn = Button(win_3,text="Save",font=f,width=10,command=save)
 	save_btn.pack(pady=10)
+	save_btn.place(relx= 0.2,rely=0.71)
+	clr_btn = Button(win_3,text="Clear",font=f,width=10,command=clear)
+	clr_btn.pack(pady=10)
+	clr_btn.place(relx=0.55,rely=0.71)
 	back_btn = Button(win_3,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
+	back_btn.place(relx=0.375,rely=0.85)
 
 	win_3.mainloop()
 
