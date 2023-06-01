@@ -4,6 +4,11 @@ from tkinter import messagebox
 from sqlite3 import *
 import requests
 import geocoder
+import csv
+from pathlib import Path
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # Add Employee
 def add():
@@ -321,8 +326,51 @@ def delete():
 	win_4.mainloop()
 	
 def chart():
-	pass
+	try:
+		con = connect("ems.db")
+		cursor = con.cursor()
+		sql = "select * from emp order by salary desc LIMIT 5"
+		c = cursor.execute(sql)
+		data = c.fetchall()
+		path = Path('top_5_emp.csv')
+		if path.is_file() == True:
+			os.remove(path)
+			csvFile = open('top_5_emp.csv', 'w')
+			writer = csv.writer(csvFile)
+			writer.writerow(['ID', 'Name', 'Salary'])
+			for data_list in data:
+				writer.writerow(data_list)
+			csvFile.close()
+			datac = pd.read_csv("top_5_emp.csv")
+			Name = datac["Name"]
+			Salary = datac["Salary"]
+			plt.figure().set_figwidth(8)
+			plt.bar(Name,Salary,width=0.20,color="green")
+			plt.title("Top 5 Employees")
+			plt.xlabel("Employee Name")
+			plt.ylabel("Salary")
+			plt.show()
+		else:
+			csvFile = open('top_5_emp.csv','w')
+			writer = csv.writer(csvFile)
+			writer.writerow(['ID','Name','Salary'])
+			for data_list in data:
+				writer.writerow(data_list)
+			csvFile.close()
+			datac = pd.read_csv("top_5_emp.csv")
+			Name = datac["Name"]
+			Salary = datac["Salary"]
+			plt.figure().set_figwidth(8)
+			plt.bar(Name, Salary, width=0.20, color="green")
+			plt.xlabel("Employee Name")
+			plt.ylabel("Salary")
 
+			plt.show()
+	except Exception as e:
+		messagebox.showerror("Error",e)
+	finally:
+		if con is not None:
+			con.close()
 
 # Location function using API
 def location():
@@ -368,7 +416,7 @@ update_btn.pack(pady=10)
 del_btn = Button(root,text = 'Delete',font=f,width=10,command=delete)
 del_btn.pack(pady=10)
 
-charts_btn = Button(root,text = 'Charts',font=f,width=10)
+charts_btn = Button(root,text = 'Charts',font=f,width=10,command=chart)
 charts_btn.pack(pady=10)
 
 
