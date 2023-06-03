@@ -9,6 +9,7 @@ from pathlib import Path
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Add Employee
 def add():
@@ -19,6 +20,7 @@ def add():
 			con = connect("ems.db")
 			cursor = con.cursor()
 			id = int(id_ent.get())
+			print(id_ent.get())
 			sq = "select exists (select * from emp where id='%d' )"
 			c = cursor.execute(sq % id)
 			data_id = c.fetchall()
@@ -49,12 +51,18 @@ def add():
 						messagebox.showerror("Error", "Name cannot contain digits or symbols.")
 						name_ent.delete(0, END)
 						name_ent.focus()
+
 			elif data_id == 1:
 				messagebox.showerror("Error","ID already exists! ")
 
 		except ValueError as ve:
 			con.rollback()
-			messagebox.showerror("Error","Incorrect Input type")
+			if id_ent.get() == "":
+				messagebox.showerror("Error", "ID cannot be empty")
+			if len(name) == 0:
+				messagebox.showerror("Error", "Name cannot be empty")
+			if sal_ent.get() == "":
+				messagebox.showerror("Error", "Salary cannot be empty")
 		finally:
 			if con is not None:
 				con.close()
@@ -93,6 +101,11 @@ def add():
 	back_btn = Button(win_1,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
+	def on_closing():
+		messagebox.showinfo("Close","E.M.S is terminated.")
+		win_1.destroy()
+		root.destroy()
+	win_1.protocol('WM_DELETE_WINDOW',on_closing)
 	win_1.mainloop()
 
 # View Employee
@@ -155,6 +168,11 @@ def view():
 	back_btn = Button(win_2,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
+	def on_closing():
+		messagebox.showinfo("Close","E.M.S is terminated.")
+		win_2.destroy()
+		root.destroy()
+	win_2.protocol('WM_DELETE_WINDOW',on_closing)
 	win_2.mainloop()
 
 # Update Employee
@@ -224,7 +242,12 @@ def update():
 
 		except ValueError as ve:
 			con.rollback()
-			messagebox.showerror("Error","Incorrect Input type")
+			if id_ent.get() == "":
+				messagebox.showerror("Error", "ID cannot be empty")
+			if len(nm) == 0:
+				messagebox.showerror("Error", "Name cannot be empty")
+			if sal_ent.get() == "":
+				messagebox.showerror("Error", "Salary cannot be empty")
 		finally:
 			if con is not None:
 				con.close()
@@ -274,6 +297,11 @@ def update():
 	back_btn.pack(pady=10)
 	back_btn.place(relx=0.375,rely=0.85)
 
+	def on_closing():
+		messagebox.showinfo("Close","E.M.S is terminated.")
+		win_3.destroy()
+		root.destroy()
+	win_3.protocol('WM_DELETE_WINDOW',on_closing)
 	win_3.mainloop()
 
 # Delete Employee
@@ -323,6 +351,11 @@ def delete():
 	back_btn = Button(win_4,text="Back",font=f,width=10,command=back)
 	back_btn.pack(pady=10)
 
+	def on_closing():
+		messagebox.showinfo("Close","E.M.S is terminated.")
+		win_4.destroy()
+		root.destroy()
+	win_4.protocol('WM_DELETE_WINDOW',on_closing)
 	win_4.mainloop()
 	
 def chart():
@@ -364,7 +397,6 @@ def chart():
 			plt.bar(Name, Salary, width=0.20, color="green")
 			plt.xlabel("Employee Name")
 			plt.ylabel("Salary")
-
 			plt.show()
 	except Exception as e:
 		messagebox.showerror("Error",e)
