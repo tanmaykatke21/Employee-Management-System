@@ -27,21 +27,12 @@ def add():
     def save():
         try:
             if id_ent.get() and name_ent.get() and sal_ent.get():
-                print("All fields filled")
-                if id_ent.get().replace("-","",1).isnumeric() and name_ent.get().replace(" ","").isalpha() and sal_ent.get().replace("-","",1).replace(".","",1).isnumeric():
-                    print("All Entry Data types are correct")
+                if id_ent.get().replace("-","",1).isnumeric() and name_ent.get().isalpha() and sal_ent.get().replace("-","",1).replace(".","",1).isnumeric():
                     id = int(id_ent.get())
                     name = name_ent.get()
                     sal = float(sal_ent.get())
                     if isinstance(id,int) and isinstance(name,str) and isinstance(sal,float):
-                        print("ID is valid int")
-                        print("Name is valid str")
-                        print("Salary is valid float")
                         if (id>0) and len(name)>=2 and (sal>0) and (sal>=8000):
-                            print("ID is +ve and is not 0")
-                            print("Length of name is greater than or equal to 2")
-                            print("Salary is +ve and greater than 8000")
-
                             con = connect("ems.db")
                             cursor = con.cursor()
                             sq = "select exists (select * from emp where id='%d' )"
@@ -259,7 +250,7 @@ def update():
         try:
             if id_ent.get():
                 if name_ent.get() and sal_ent.get():
-                    if name_ent.get().replace(" ","").isalpha() and sal_ent.get().replace("-","",1).replace(".","",1).isnumeric():
+                    if name_ent.get().isalpha() and sal_ent.get().replace("-","",1).replace(".","",1).isnumeric():
                         id = int(id_ent.get())
                         name = name_ent.get()
                         sal = float(sal_ent.get())
@@ -400,14 +391,13 @@ def delete():
                 messagebox.showerror("Error","ID cannot have alphabets or special characters.")
             if not id_ent.get().replace("-","",1).isnumeric():
                 messagebox.showerror("Error","ID must be integer.")
+        except extraValidationError as e4:
+            if int(id_ent.get())<=0:
+                messagebox.showerror("Error","Id cannot be negative or 0")
         except Exception as e3:
             print("Issue",e3)
-        except extraValidationError as e4:
-            if id<=0:
-                messagebox.showerror("Error","Id cannot be negative or 0")
+
         finally:
-            if con is not None:
-                con.close()
             id_ent.delete(0, END)
 
     def back():
